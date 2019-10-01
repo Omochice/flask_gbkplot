@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
 import pandas as pd
 import time
-import io
+import os
 from matplotlib.font_manager import FontProperties
 import json
 
@@ -78,9 +78,12 @@ def select(con, pk):
 
 def delete(con, pk):
     """ 指定したキーのデータをDELETEする """
+    results = select(con, pk)
+    # print(results["img"])
     cur = con.cursor()
     cur.execute('delete from results where id=?', (pk,))
     con.commit()
+    os.remove(os.path.join(".", "static", results["img"]))
 
 
 def select_all(con):

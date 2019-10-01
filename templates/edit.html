@@ -7,12 +7,19 @@
     <input class="form-control" type="text" size="30" name="title">
     <label>配列データ</label>
     <textarea class="form-control" name="data" rows="5"></textarea>
+    <!-- <label>ファイルの種類</label>
+    <select name="filetype" size=1>
+        <option value="text">text</option>
+        <option value="fasta">fasta</option>
+        <option value="gbk">gbk</option>
+    </select> -->
     <label>適用する重み</label>
     <select name="class" size=1>
         {% for class in classes %}
         <option value={{ class }}>{{ class }}</option>
         {% endfor %}
     </select>
+
     <input class="btn btn-primary" type="submit" value="送信">
 
 </form>

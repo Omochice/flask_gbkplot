@@ -18,7 +18,7 @@ app.config.update(dict(
 # 以下、DB接続関連の関数
 
 def connect_db():
-    """ データベス接続に接続します """
+    """ データベース接続に接続します """
     con = sqlite3.connect(app.config['DATABASE'])
     con.row_factory = sqlite3.Row
     return con
@@ -65,6 +65,7 @@ def analysis():
     title = request.form['title']
     data = request.form['data']
     feature_class = request.form['class']
+    # file_type = request.form["filetype"]
 
     img = models.create_scatter(title, data, feature_class)
 
