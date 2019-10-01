@@ -1,13 +1,15 @@
 """
 ビジネスロジックモジュール
 """
-import matplotlib.pyplot as plt
-from pandas.plotting import scatter_matrix
-import pandas as pd
-import time
-import os
-from matplotlib.font_manager import FontProperties
 import json
+from matplotlib.font_manager import FontProperties
+import os
+import time
+import pandas as pd
+from pandas.plotting import scatter_matrix
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 
 font_path = "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"
 font_prop = FontProperties(fname=font_path)
@@ -84,6 +86,13 @@ def delete(con, pk):
     cur.execute('delete from results where id=?', (pk,))
     con.commit()
     os.remove(os.path.join(".", "static", results["img"]))
+    reset_autoincrement(con)
+
+
+def reset_autoincrement(con):
+    cur = con.cursor()
+    cur.execute("delete from sqlite_sequence where name='results'")
+    con.commit()
 
 
 def select_all(con):
