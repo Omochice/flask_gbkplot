@@ -47,13 +47,9 @@ def create_scatter(title, seq, feature_class):
     plt.plot(x_coodinate, y_coodinate)
 
     filename = time.strftime('%Y%m%d%H%M%S') + ".png"
-
     save_path = "./static/result/" + filename
-
     url = "result/" + filename
-
     plt.savefig(save_path)
-
     plt.close()
 
     return url
