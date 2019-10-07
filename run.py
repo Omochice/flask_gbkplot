@@ -51,7 +51,8 @@ def index():
 @app.route('/create')
 def create():
     """ 新規作成画面 """
-    with open("./static/self_information.json", "r") as jsonfile:
+    json_path = os.path.join(app.root_path, "static", "self_information/json")
+    with open(json_path, "r") as jsonfile:
         json_dict = json.load(jsonfile)
 
     classes = sorted(list(json_dict.keys()))
