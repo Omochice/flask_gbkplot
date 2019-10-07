@@ -9,6 +9,10 @@ import pandas as pd
 from pandas.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 import matplotlib
+from flask import Flask
+
+app = Flask(__name__)
+
 matplotlib.use('Agg')
 
 font_path = "static/TakaoPGothic.ttf"
