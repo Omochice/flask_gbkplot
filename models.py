@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 
-font_path = "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"
+font_path = "static/TakaoPGothic.ttf"
 font_prop = FontProperties(fname=font_path)
 
 
