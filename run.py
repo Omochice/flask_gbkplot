@@ -66,7 +66,6 @@ def analysis():
     title = request.form['title']
     data = request.form['data']
     feature_class = request.form['class']
-    # file_type = request.form["filetype"]
 
     img = models.create_scatter(title, data, feature_class)
 

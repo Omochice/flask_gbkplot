@@ -85,7 +85,7 @@ def delete(con, pk):
     cur = con.cursor()
     cur.execute('delete from results where id=?', (pk,))
     con.commit()
-    os.remove(os.path.join(app.root_path, "static", "result",  results["img"]))
+    os.remove(os.path.join(app.root_path, "static", results["img"]))
     reset_autoincrement(con)
 
 
