@@ -4,21 +4,27 @@
 <form action="{{ url_for('analysis') }}" method="post">
 
     <label>タイトル</label>
-    <input class="form-control" type="text" size="30" name="title">
+    <input class="form-control" type="text" size="30" name="title" placeholder="グラフのタイトルを入力してください">
     <label>配列データ</label>
-    <textarea class="form-control" name="data" rows="5"></textarea>
+    <textarea class="form-control" name="data" rows="5" placeholder="ATGC以外の文字は無視されます"></textarea>
     <!-- <label>ファイルの種類</label>
     <select name="filetype" size=1>
         <option value="text">text</option>
         <option value="fasta">fasta</option>
         <option value="gbk">gbk</option>
     </select> -->
-    <label>適用する重み</label>
-    <select name="class" size=1>
-        {% for class in classes %}
-        <option value={{ class }}>{{ class }}</option>
-        {% endfor %}
-    </select>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">適用する重み</label>
+        </div>
+        <select class="custom-select" id="inputGroupSelect01" name="class">
+            <option selected value="default">default</option>
+            {% for class in classes %}
+            <option value={{ class }}>{{ class }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
     <input class="btn btn-primary" type="submit" value="送信">
 
