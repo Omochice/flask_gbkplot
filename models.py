@@ -2,14 +2,17 @@
 ビジネスロジックモジュール
 """
 import json
-from matplotlib.font_manager import FontProperties
 import os
 import time
-import pandas as pd
-from pandas.plotting import scatter_matrix
-import matplotlib.pyplot as plt
+
 import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
 from flask import Flask
+from matplotlib.font_manager import FontProperties
+from pandas.plotting import scatter_matrix
+
+import utils
 
 app = Flask(__name__)
 
@@ -22,8 +25,6 @@ font_prop = FontProperties(fname=font_path)
 def create_scatter(title, seq, feature_class):
 
     VECTOR_DICT = {"a": [1, 1], "t": [-1, 1], "g": [-1, -1], "c": [1, -1]}
-    triplet = ""
-    BASE_PAIR = set(["a", "t", "g", "c"])
     x_coodinate = [0]
     y_coodinate = [0]
 
@@ -32,20 +33,11 @@ def create_scatter(title, seq, feature_class):
 
     weight_dict = json_dict[feature_class]
 
-    for alphabet in seq.lower():
-        if alphabet not in BASE_PAIR:
-            continue
-        triplet += alphabet
-        if len(triplet) < 3:
-            x_coodinate.append(x_coodinate[-1] + VECTOR_DICT[alphabet][0])
-            y_coodinate.append(y_coodinate[-1] + VECTOR_DICT[alphabet][1])
-        else:
-            triplet = triplet[-3:]
-            x_coodinate.append(
-                x_coodinate[-1] + VECTOR_DICT[alphabet][0] * weight_dict[triplet])
-
-            y_coodinate.append(
-                y_coodinate[-1] + VECTOR_DICT[alphabet][1] * weight_dict[triplet])
+    for triplet in utils.window_search(seq):
+        x_coodinate.append(x_coodinate[-1] + VECTOR_DICT[triplet[-1]][0] *
+                           weight_dict.get(triplet, 1))
+        y_coodinate.append(y_coodinate[-1] + VECTOR_DICT[triplet[-1]][1] *
+                           weight_dict.get(triplet, 1))
 
     plt.title(title, fontproperties=font_prop)
     plt.plot(x_coodinate, y_coodinate)
@@ -62,8 +54,9 @@ def create_scatter(title, seq, feature_class):
 def insert(con, title, data, feature_class, img):
     """ INSERT処理 """
     cur = con.cursor()
-    cur.execute('insert into results (title, data, feature_class, img) values (?, ?, ?, ?)',
-                [title, data, feature_class, img])
+    cur.execute(
+        'insert into results (title, data, feature_class, img) values (?, ?, ?, ?)',
+        [title, data, feature_class, img])
 
     pk = cur.lastrowid
     con.commit()
@@ -74,7 +67,8 @@ def insert(con, title, data, feature_class, img):
 def select(con, pk):
     """ 指定したキーのデータをSELECTする """
     cur = con.execute(
-        'select id, title, data, feature_class, img, created from results where id=?', (pk,))
+        'select id, title, data, feature_class, img, created from results where id=?',
+        (pk, ))
     return cur.fetchone()
 
 
@@ -83,7 +77,7 @@ def delete(con, pk):
     results = select(con, pk)
     # print(results["img"])
     cur = con.cursor()
-    cur.execute('delete from results where id=?', (pk,))
+    cur.execute('delete from results where id=?', (pk, ))
     con.commit()
     os.remove(os.path.join(app.root_path, "static", results["img"]))
     reset_autoincrement(con)
@@ -98,5 +92,6 @@ def reset_autoincrement(con):
 def select_all(con):
     """ SELECTする """
     cur = con.execute(
-        'select id, title, data, feature_class, img, created from results order by id desc')
+        'select id, title, data, feature_class, img, created from results order by id desc'
+    )
     return cur.fetchall()
