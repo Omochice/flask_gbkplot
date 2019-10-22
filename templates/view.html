@@ -2,19 +2,27 @@
 {% block body %}
 <h1>結果参照</h1>
 
-<h3>{{ result.id }}:{{ result.title|safe}}</h3>
-<p>{{ result.created }}</p>
+<h3>{{ result.id }}: {{ result.title|safe}}
+    <small class="text-muted">{{ result.created }}</small>
+</h3>
 <div class="row">
-    <img src="{{ url_for('static', filename=result.img) }}">
+    <img src="{{ url_for('static', filename=result.img) }}" class="img-fluid" alt="Responsive image">
 </div>
 
 <div class="row">
-    <textarea class="form-control" name="data" rows="5">{{result.data}}</textarea>
+    <div class="col-8">
+        <textarea class="form-control" rows="5" disabled>{{result.data}}</textarea>
+    </div>
 </div>
 
 <br><br>
 
-<h4>適用した重みは"{{ result.feature_class }}"です</h4>
+
+<dl class="row">
+    <dt class="col-sm-2">適用した重み</dt>
+    <dd class="col-sm-6">{{ result.feature_class }}</dd>
+</dl>
 
 <br><br>
+
 {% endblock %}
