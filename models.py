@@ -24,20 +24,12 @@ font_prop = FontProperties(fname=font_path)
 
 def create_scatter(title, seq, feature_class):
 
-    VECTOR_DICT = {"a": [1, 1], "t": [-1, 1], "g": [-1, -1], "c": [1, -1]}
-    x_coodinate = [0]
-    y_coodinate = [0]
-
     with open("./static/self_information.json", "r") as jsonfile:
         json_dict = json.load(jsonfile)
 
     weight_dict = json_dict[feature_class]
 
-    for triplet in utils.window_search(seq):
-        x_coodinate.append(x_coodinate[-1] + VECTOR_DICT[triplet[-1]][0] *
-                           weight_dict.get(triplet, 1))
-        y_coodinate.append(y_coodinate[-1] + VECTOR_DICT[triplet[-1]][1] *
-                           weight_dict.get(triplet, 1))
+    x_coodinate, y_coodinate = utils.calculate_coordinates(seq, weight_dict)
 
     plt.title(title, fontproperties=font_prop)
     plt.plot(x_coodinate, y_coodinate)
