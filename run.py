@@ -9,13 +9,14 @@ import models
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'db.sqlite3'),
-    SECRET_KEY='mizuta-labo',
-))
-
+app.config.update(
+    dict(
+        DATABASE=os.path.join(app.root_path, 'db.sqlite3'),
+        SECRET_KEY='mizuta-labo',
+    ))
 
 # 以下、DB接続関連の関数
+
 
 def connect_db():
     """ データベース接続に接続します """
@@ -36,6 +37,7 @@ def close_db(error):
     """ db接続をcloseします """
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
 
 # 以下、画面/機能毎の関数
 
@@ -67,11 +69,11 @@ def analysis():
     data = request.form['data']
     feature_class = request.form['class']
 
-    img = models.create_scatter(title, data, feature_class)
+    img, hist = models.create_scatter(title, data, feature_class)
 
     con = get_db()
 
-    pk = models.insert(con, title, data, feature_class, img)
+    pk = models.insert(con, title, data, feature_class, img, hist)
     flash('登録処理が完了しました。')
     return redirect(url_for('view', pk=pk))
 
@@ -90,8 +92,9 @@ def view(pk):
     """ 結果参照処理 """
     con = get_db()
     result = models.select(con, pk)
+    histgram_y_coo = models.decrypt_histgram(result["hist"])
     return render_template('view.html', result=result)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

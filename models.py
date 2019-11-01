@@ -7,12 +7,11 @@ import time
 
 import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
 from flask import Flask
 from matplotlib.font_manager import FontProperties
-from pandas.plotting import scatter_matrix
 
 import utils
+import local_pattern
 
 app = Flask(__name__)
 
@@ -31,24 +30,27 @@ def create_scatter(title, seq, feature_class):
 
     x_coodinate, y_coodinate = utils.calculate_coordinates(seq, weight_dict)
 
+    hist = local_pattern.make_local_pattern_histgram(x_coodinate, y_coodinate)
+    hist_str = ",".join(map(str, hist))
+
     plt.title(title, fontproperties=font_prop)
     plt.plot(x_coodinate, y_coodinate)
 
     filename = time.strftime('%Y%m%d%H%M%S') + ".png"
     save_path = os.path.join(app.root_path, "static", "result", filename)
-    url = "result/" + filename
+    image_path = "result/" + filename
     plt.savefig(save_path)
     plt.close()
 
-    return url
+    return image_path, hist_str
 
 
-def insert(con, title, data, feature_class, img):
+def insert(con, title, data, feature_class, img, hist):
     """ INSERT処理 """
     cur = con.cursor()
     cur.execute(
-        'insert into results (title, data, feature_class, img) values (?, ?, ?, ?)',
-        [title, data, feature_class, img])
+        'insert into results (title, data, feature_class, img, hist) values (?, ?, ?, ?, ?)',
+        [title, data, feature_class, img, hist])
 
     pk = cur.lastrowid
     con.commit()
@@ -59,7 +61,7 @@ def insert(con, title, data, feature_class, img):
 def select(con, pk):
     """ 指定したキーのデータをSELECTする """
     cur = con.execute(
-        'select id, title, data, feature_class, img, created from results where id=?',
+        'select id, title, data, feature_class, img, hist, created from results where id=?',
         (pk, ))
     return cur.fetchone()
 
@@ -84,6 +86,11 @@ def reset_autoincrement(con):
 def select_all(con):
     """ SELECTする """
     cur = con.execute(
-        'select id, title, data, feature_class, img, created from results order by id desc'
+        'select id, title, data, feature_class, img, hist, created from results order by id desc'
     )
     return cur.fetchall()
+
+
+def decrypt_histgram(hist_str):
+    decrypted_hist = hist_str.split(",")
+    return decrypted_hist
