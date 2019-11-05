@@ -39,7 +39,7 @@ def make_local_pattern_histgram(x_coodinates, y_coodinates):
 
     filled_pixels = set([])
 
-    results = np.zeros(512, dtype=np.uint8)
+    results = [0] * 512
 
     for first, last in zip(coodinates[:-1], coodinates[1:]):
         first_x = int(first[0])
