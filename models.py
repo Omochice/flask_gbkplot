@@ -38,7 +38,7 @@ def create_scatter(title, seq, feature_class):
     x_coodinate, y_coodinate = utils.calculate_coordinates(seq, weight_dict)
 
     hist = local_pattern.make_local_pattern_histgram(x_coodinate, y_coodinate)
-    hist_str = ",".join(map(str, hist))
+    # hist_str = ",".join(map(str, hist))
 
     plt.title(title, fontproperties=font_prop)
     plt.plot(x_coodinate, y_coodinate)
@@ -49,7 +49,7 @@ def create_scatter(title, seq, feature_class):
     plt.savefig(save_path)
     plt.close()
 
-    return image_path, hist_str
+    return image_path, hist
 
 
 def insert(con, title, data, feature_class, img, hist):
@@ -108,7 +108,7 @@ def calculate_similarity(histgram):
     # pickleから呼び出す
 
     similarity_results = []
-    with open(os.path.join("static", "comparisons.pickle"), "r") as f:
+    with open("static/samples/comparisons.pickle", "rb") as f:
         comparisons = pickle.load(f)
 
     for comparison in comparisons:
@@ -117,5 +117,6 @@ def calculate_similarity(histgram):
         similarity_results.append((comparison[0], similarity))
 
     similarity_results.sort(key=lambda x: x[1], reverse=True)
+    print(similarity_results)
 
     return similarity_results[:5]

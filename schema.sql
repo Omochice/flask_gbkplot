@@ -6,5 +6,5 @@ create table results (
   `feature_class` text not null,
   `img` text not null,
   `created` datetime default CURRENT_TIMESTAMP,
-  `hist` text not null
+  `hist` blob
 );

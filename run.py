@@ -5,9 +5,13 @@ import json
 from flask import Flask, flash, g, redirect, render_template, request, url_for
 
 import models
+import pickle
+import bz2
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+
+PROTOCOL = pickle.HIGHEST_PROTOCOL
 
 app.config.update(
     dict(
@@ -37,6 +41,14 @@ def close_db(error):
     """ db接続をcloseします """
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
+
+def ptoz(obj):
+    return bz2.compress(pickle.dumps(obj, PROTOCOL), 3)
+
+
+def ztop(b):
+    return pickle.loads(bz2.decompress(b))
 
 
 # 以下、画面/機能毎の関数
@@ -73,7 +85,7 @@ def analysis():
 
     con = get_db()
 
-    pk = models.insert(con, title, data, feature_class, img, hist)
+    pk = models.insert(con, title, data, feature_class, img, ptoz(hist))
     flash('登録処理が完了しました。')
     return redirect(url_for('view', pk=pk))
 
@@ -92,12 +104,13 @@ def view(pk):
     """ 結果参照処理 """
     con = get_db()
     result = models.select(con, pk)
-    histgram = models.decrypt_histgram(result["hist"])
+    histgram = ztop(result["hist"])
 
     similary_top_five = models.calculate_similarity(histgram)
 
     return render_template('view.html',
                            result=result,
+                           histogram=histgram,
                            top_five=similary_top_five)
 
 
