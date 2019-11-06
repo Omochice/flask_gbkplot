@@ -1,4 +1,3 @@
-import numpy as np
 from bresenham import bresenham
 import itertools
 
@@ -18,7 +17,7 @@ def generate_mini_windows(filled_pixels):
         for index in range(9):  # 左上to右下
             top_left = (filled_pixel[0] - (index % 3),
                         filled_pixel[1] + (index // 3))
-            if top_left not in previous_top_left_points:  #左上が決まれば小窓は一意に決まる
+            if top_left not in previous_top_left_points:  # 左上が決まれば小窓は一意に決まる
                 previous_top_left_points |= set([top_left])  # 使った左上を保存
                 yield create_mini_window(top_left)
 

@@ -1,7 +1,4 @@
-import os
 import re
-
-import numpy as np
 
 
 def window_search(sequence, each=3, overhang=None):
@@ -21,7 +18,6 @@ def window_search(sequence, each=3, overhang=None):
 
 def calculate_coordinates(seq, weight_dict):
     VECTOR_DICT = {"a": [1, 1], "t": [-1, 1], "g": [-1, -1], "c": [1, -1]}
-    HOME_DIRECTORY = os.environ["HOME"]
     x_coodinates = [0]
     y_coodinates = [0]
 
