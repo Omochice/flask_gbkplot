@@ -92,8 +92,13 @@ def view(pk):
     """ 結果参照処理 """
     con = get_db()
     result = models.select(con, pk)
-    histgram_y_coo = models.decrypt_histgram(result["hist"])
-    return render_template('view.html', result=result)
+    histgram = models.decrypt_histgram(result["hist"])
+
+    similary_top_five = models.calculate_similarity(histgram)
+
+    return render_template('view.html',
+                           result=result,
+                           top_five=similary_top_five)
 
 
 if __name__ == '__main__':

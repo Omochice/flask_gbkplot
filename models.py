@@ -3,6 +3,7 @@
 """
 import json
 import os
+import pickle
 import time
 
 import matplotlib
@@ -10,8 +11,9 @@ import matplotlib.pyplot as plt
 from flask import Flask
 from matplotlib.font_manager import FontProperties
 
-import utils
 import local_pattern
+import similarity_measure
+import utils
 
 app = Flask(__name__)
 
@@ -28,6 +30,11 @@ def create_scatter(title, seq, feature_class):
 
     weight_dict = json_dict[feature_class]
 
+    time_str = time.strftime('%Y%m%d%H%M%S')
+
+    if not title:
+        title = time_str
+
     x_coodinate, y_coodinate = utils.calculate_coordinates(seq, weight_dict)
 
     hist = local_pattern.make_local_pattern_histgram(x_coodinate, y_coodinate)
@@ -36,7 +43,7 @@ def create_scatter(title, seq, feature_class):
     plt.title(title, fontproperties=font_prop)
     plt.plot(x_coodinate, y_coodinate)
 
-    filename = time.strftime('%Y%m%d%H%M%S') + ".png"
+    filename = time_str + ".png"
     save_path = os.path.join(app.root_path, "static", "result", filename)
     image_path = "result/" + filename
     plt.savefig(save_path)
@@ -92,5 +99,23 @@ def select_all(con):
 
 
 def decrypt_histgram(hist_str):
-    decrypted_hist = hist_str.split(",")
+    decrypted_hist = list(map(int, hist_str.split(",")))
     return decrypted_hist
+
+
+def calculate_similarity(histgram):
+    # 比較対象の生物の(名前, ヒストグラム)のリストを取得
+    # pickleから呼び出す
+
+    similarity_results = []
+    with open(os.path.join("static", "comparisons.pickle"), "r") as f:
+        comparisons = pickle.load(f)
+
+    for comparison in comparisons:
+        similarity = similarity_measure.cosine_similarity(
+            histgram, comparison[1])
+        similarity_results.append((comparison[0], similarity))
+
+    similarity_results.sort(key=lambda x: x[1], reverse=True)
+
+    return similarity_results[:5]
