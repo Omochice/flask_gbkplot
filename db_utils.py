@@ -34,14 +34,14 @@ def select(con, pk):
     return cur.fetchone()
 
 
-def delete(con, pk):
+def delete(con, pk, app_root_path):
     """ 指定したキーのデータをDELETEする """
     results = select(con, pk)
     # print(results["img"])
     cur = con.cursor()
     cur.execute('delete from results where id=?', (pk, ))
     con.commit()
-    os.remove(os.path.join(app.root_path, "static", results["img"]))
+    os.remove(os.path.join(app_root_path, "static", results["img"]))
     reset_autoincrement(con)
 
 
