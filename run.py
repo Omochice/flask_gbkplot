@@ -5,6 +5,7 @@ import json
 from flask import Flask, flash, g, redirect, render_template, request, url_for
 
 import models
+import db_utils
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -46,7 +47,7 @@ def close_db(error):
 def index():
     """ 一覧画面 """
     con = get_db()
-    results = models.select_all(con)
+    results = db_utils.select_all(con)
     return render_template('index.html', results=results)
 
 
@@ -73,7 +74,8 @@ def analysis():
 
     con = get_db()
 
-    pk = models.insert(con, title, data, feature_class, img, ptoz(hist))
+    pk = db_utils.insert(con, title, data, feature_class, img,
+                         db_utils.ptoz(hist))
     flash('登録処理が完了しました。')
     return redirect(url_for('view', pk=pk))
 
@@ -82,7 +84,7 @@ def analysis():
 def delete(pk):
     """ 結果削除処理 """
     con = get_db()
-    models.delete(con, pk)
+    db_utils.delete(con, pk, app.root_path)
     flash('削除処理が完了しました。')
     return redirect(url_for('index'))
 
@@ -91,15 +93,18 @@ def delete(pk):
 def view(pk):
     """ 結果参照処理 """
     con = get_db()
-    result = models.select(con, pk)
-    histgram = ztop(result["hist"])
+    result = db_utils.select(con, pk)
+    histgram = db_utils.ztop(result["hist"])
 
     similary_top_five = models.calculate_similarity(histgram)
+    tmpdict = []
+    for item in similary_top_five:
+        tmpdict.append({"name": item[0], "similarity": item[1]})
 
     return render_template('view.html',
                            result=result,
                            histogram=histgram,
-                           top_five=similary_top_five)
+                           top_five=tmpdict)
 
 
 if __name__ == '__main__':

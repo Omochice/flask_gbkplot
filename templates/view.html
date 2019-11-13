@@ -25,6 +25,16 @@
 
 <br><br>
 
-<p>{{result.hist}}
-</p>
+<table class="table table-striped table-hover">
+    <tr>
+        <th>参照生物</th>
+        <th>類似度</th>
+    </tr>
+    {% for item in top_five %}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.similarity }}</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

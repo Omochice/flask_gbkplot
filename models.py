@@ -14,6 +14,7 @@ from matplotlib.font_manager import FontProperties
 import local_pattern
 import similarity_measure
 import utils
+import db_utils
 
 app = Flask(__name__)
 
@@ -71,6 +72,5 @@ def calculate_similarity(histgram):
         similarity_results.append((comparison[0], similarity))
 
     similarity_results.sort(key=lambda x: x[1], reverse=True)
-    print(similarity_results)
 
     return similarity_results[:5]
